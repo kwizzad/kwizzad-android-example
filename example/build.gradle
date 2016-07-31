@@ -48,7 +48,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.2.0'
     compile 'com.android.support:design:23.2.0'
-    compile 'com.kwizzad.android:kwizzad-android:0.1.0@aar'
+    compile 'com.kwizzad.android:kwizzad-android:0.2.0@aar'
     // KWIZZAD dependencies
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'io.reactivex:rxjava:1.1.7'
