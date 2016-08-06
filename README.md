@@ -1,2 +1,2 @@
 # kwizzad-android-example
-fork / pull request test.
+This is the example app for KWIZZAD SDK v0.2.0
