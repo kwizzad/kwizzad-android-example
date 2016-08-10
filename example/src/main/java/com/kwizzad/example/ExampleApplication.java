@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.kwizzad.Configuration;
 import com.kwizzad.Kwizzad;
-import okhttp3.OkHttpClient;
 
 public class ExampleApplication extends Application {
 
@@ -15,8 +14,7 @@ public class ExampleApplication extends Application {
         Kwizzad.init(
                 new Configuration.Builder()
                         .applicationContext(this)
-                        .apiKey("6137f9e8248c6099be8e22224b2dd3444a5c58da88b34cf864cc22a7ea8f5b7d")
-                        .okHttpClient(new OkHttpClient())
+                        .apiKey("b81e71a86cf1314d249791138d642e6c4bd08240f21dd31811dc873df5d7469d")
                         .debug(true)
                         .build()
         );

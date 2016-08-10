@@ -14,7 +14,7 @@ subprojects {
     repositories {
         jcenter()
         mavenCentral()
-	    maven() { url 'http://repo.kwizzad.com' }
+        maven { url  "https://kwizzad.bintray.com/kwizzad-android" }
     }
 }
 
