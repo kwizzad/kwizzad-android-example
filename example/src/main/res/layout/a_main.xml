@@ -39,5 +39,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+
+        <Button
+            android:id="@+id/simplePreload"
+            android:text="simple preloading example"
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
