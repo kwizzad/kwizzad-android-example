@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             preloadButton.setOnClickListener(v -> {
                 if (Kwizzad.initialized().get()) {
                     PreloadingDialogFragment.create(placementIdInput.getEditText().getText().toString())
-                            .show(getSupportFragmentManager(), "preload");
+                            .show(getFragmentManager(), "preload");
                 } else {
                     Log.e("KWIZZAD", "not initialized");
                     Snackbar.make(findViewById(R.id.coordinatorLayout), "kwizzad not initialized", Snackbar.LENGTH_INDEFINITE).show();
