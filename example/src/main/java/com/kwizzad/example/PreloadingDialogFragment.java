@@ -2,7 +2,7 @@ package com.kwizzad.example;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
+import android.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,8 +58,8 @@ public class PreloadingDialogFragment extends DialogFragment {
             Map<String, Object> customParams = new HashMap<>();
             customParams.put("foo", "bar");
 
-            AdDialogFragment
-                    .newBuilder()
+            Kwizzad
+                    .createAdViewBuilder()
                     /*
                      * dont forget to set the placement id
                      */
@@ -75,7 +75,7 @@ public class PreloadingDialogFragment extends DialogFragment {
                     /*
                      * build it
                      */
-                    .build()
+                    .dialogFragment()
                     /*
                      * and show it
                      */
@@ -104,7 +104,8 @@ public class PreloadingDialogFragment extends DialogFragment {
 
             QLog.d("got state " + placementState.adState);
 
-            adButton.setVisibility(placementState.adState == AdState.AD_READY ? View.VISIBLE : View.GONE);
+            // OPTION A: Show button once ad becomes available.
+            //adButton.setVisibility(placementState.adState == AdState.AD_READY ? View.VISIBLE : View.GONE);
 
             switch (placementState.adState) {
                 case NOFILL:
@@ -126,6 +127,13 @@ public class PreloadingDialogFragment extends DialogFragment {
                 case RECEIVED_AD:
                     statusTextView.setText("ad ready to show for placement " + placementId);
                     Kwizzad.prepare(placementId, getActivity());
+                    break;
+                case AD_READY:
+                    // OPTION-B: Direct Alternative: use this to directly show ad once ready.
+                            Kwizzad.createAdViewBuilder()
+                            .setPlacementId(placementId)
+                            .dialogFragment()
+                            .show(getFragmentManager(), "ad");
                     break;
                 case DISMISSED:
                     statusTextView.setText("finished showing the ad for placement " + placementId);

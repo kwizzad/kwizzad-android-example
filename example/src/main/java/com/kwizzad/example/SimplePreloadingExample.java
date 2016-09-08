@@ -73,11 +73,11 @@ public class SimplePreloadingExample extends AppCompatActivity {
                              * dont need to exit here, AdDialogFragment is a good choice
                              */
 
-                            AdDialogFragment
-                                    .newBuilder()
+                            Kwizzad
+                                    .createAdViewBuilder()
                                     .setPlacementId(placementId)
-                                    .build()
-                                    .show(getSupportFragmentManager(), "ad");
+                                    .dialogFragment()
+                                    .show(getFragmentManager(), "ad");
 
                             break;
 

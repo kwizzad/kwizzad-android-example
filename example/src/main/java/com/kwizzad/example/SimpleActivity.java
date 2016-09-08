@@ -47,8 +47,8 @@ public class SimpleActivity extends AppCompatActivity {
             Map<String, Object> customParams = new HashMap<>();
             customParams.put("foo", "bar");
 
-            AdDialogFragment
-                    .newBuilder()
+            Kwizzad
+                    .createAdViewBuilder()
                     /*
                      * dont forget to set the placement id
                      */
@@ -64,11 +64,11 @@ public class SimpleActivity extends AppCompatActivity {
                     /*
                      * build it
                      */
-                    .build()
+                    .dialogFragment()
                     /*
                      * and show it
                      */
-                    .show(getSupportFragmentManager(), "ad");
+                    .show(getFragmentManager(), "ad");
         });
 
         /**
