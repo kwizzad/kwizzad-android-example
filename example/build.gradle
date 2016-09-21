@@ -17,7 +17,7 @@ retrolambda {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "com.kwizzad.example"
@@ -47,7 +47,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile "com.android.support:design:23.4.0"
-    compile ("com.kwizzad.android:kwizzad-android:0.6.0-beta1") {
+    compile ("com.kwizzad.android:kwizzad-android:0.6.0") {
         exclude group:"com.android.support" // uncomment in case of android support library dependency conflicts
     }
 }
