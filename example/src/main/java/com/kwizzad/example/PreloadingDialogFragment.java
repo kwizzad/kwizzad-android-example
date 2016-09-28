@@ -13,6 +13,7 @@ import com.kwizzad.AdDialogFragment;
 import com.kwizzad.Kwizzad;
 import com.kwizzad.log.QLog;
 import com.kwizzad.model.AdState;
+import com.kwizzad.model.events.Reward;
 import com.kwizzad.property.RxSubscriber;
 
 import java.util.HashMap;
@@ -125,7 +126,14 @@ public class PreloadingDialogFragment extends DialogFragment {
 
                     break;
                 case RECEIVED_AD:
-                    statusTextView.setText("ad ready to show for placement " + placementId);
+                    // Calculate the total reward amount. We can show this to the app user before starting the actual KWIZZAD.
+                    Iterable<Reward> rewards = Kwizzad.getPlacement(placementId).getRewards();
+                    int totalReward = 0;
+                    for (Reward reward: rewards)
+                    {
+                        totalReward += reward.amount;
+                    }
+                    statusTextView.setText("ad ready to show for placement " + placementId + ". The total reward amount will be "+ totalReward);
                     Kwizzad.prepare(placementId, getActivity());
                     break;
                 case AD_READY:
