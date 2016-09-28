@@ -9,16 +9,21 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.kwizzad.example.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".SimpleActivity"/>
+        <activity android:name=".SimpleActivity"
+            android:configChanges="orientation|screenSize"
+            />
 
-        <activity android:name=".SimplePreloadingExample"/>
+        <activity android:name=".SimplePreloadingExample"
+            android:configChanges="orientation|screenSize"
+            />
 
     </application>
 

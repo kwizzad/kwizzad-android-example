@@ -11,7 +11,7 @@ import android.view.View;
 
 import com.kwizzad.Kwizzad;
 import com.kwizzad.log.QLog;
-import com.kwizzad.model.PendingEvent;
+import com.kwizzad.model.OpenTransaction;
 import com.kwizzad.model.events.Reward;
 import com.kwizzad.property.RxSubscriber;
 
@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Set<PendingEvent> shownEvents = new HashSet<>();
+    private Set<OpenTransaction> shownEvents = new HashSet<>();
     private TextInputLayout placementIdInput;
     private View preloadButton;
     private View simpleButton;
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         Kwizzad.resume(this);
 
-        RxSubscriber.subscribe(this, Kwizzad.pendingEvents(), pendingEvents -> {
+        RxSubscriber.subscribe(this, Kwizzad.pendingTransactions(), pendingEvents -> {
             if (pendingEvents.size() > 0) {
                 QLog.d("should show event " + pendingEvents);
                 // there are multiple callbacks possibly coming. its up to you if you want to show them all now
@@ -88,58 +88,61 @@ public class MainActivity extends AppCompatActivity {
 
                 // we dont wanna show this twice at least for the same session here
                 // you can handle that any way you want though
-                for (PendingEvent pendingEvent : pendingEvents) {
-                    if (shownEvents.contains(pendingEvent) == false) {
-                        QLog.d("showing event " + pendingEvent);
+                for (OpenTransaction openTransaction : pendingEvents) {
+                    if (shownEvents.contains(openTransaction) == false) {
+                        QLog.d("showing event " + openTransaction);
 
-                        // How to distinguish between Call2Action (Instant-Reward) and Callback (full billing)
-
-                        if (pendingEvent.type.equals(PendingEvent.Type.CALL2ACTION))
+                        Reward reward = openTransaction.reward;
+                        if (reward != null)
                         {
-                            // The user has completed the kwizzad and can receive an instant reward (based on guarantee payment if agreed)
-                            // Currently this event does not contain a specific reward amount, so you'll have to set this manually based on contractual agreement with KWIZZAD
-                            final int instantRewardAmount = 5000;
-                            // now you can reward the user
-                        } else if (pendingEvent.type.equals(PendingEvent.Type.CALLBACK))
-                        {
-                            // The advertising partner has confirme the transaction. The user can be rewarded the full amount
-                            Reward reward = pendingEvent.reward;
+                            // Here you get the reward amount for the user.
                             int rewardAmount = reward.amount;
                             String rewardCurrency = reward.currency; // e.g. chips, coins, loot, smiles as configued by KWIZZAD.
+
+                            /*
+
+                            The following part is optional: If you want to know which type of reward the notification was about
+                            How to distinguish between Call2Action (Instant-Reward) and Callback (full billing)
+
+                            Reward.Type rewardType = reward.type; // CALL2ACTIONSTARTED, CALLBACK, GOALREACHED
+
+                            if (openTransaction.reward.type.equals(Reward.Type.CALL2ACTIONSTARTED)) { ... }
+
+                            else if (openTransaction.reward.type.equals(Reward.Type.CALLBACK)) { ... }
+
+                          */
+
                         }
 
-                        showEvent(pendingEvent);
-
-                        // just showing the first one
-                        return;
+                        showEvent(openTransaction);
                     }
                     else {
-                        QLog.d("already shown event "+pendingEvent);
+                        QLog.d("already shown event "+openTransaction);
                     }
                 }
             }
         });
     }
 
-    private void showEvent(final PendingEvent pendingEvent) {
-        shownEvents.add(pendingEvent);
+    private void showEvent(final OpenTransaction openTransaction) {
+        shownEvents.add(openTransaction);
 
 
         new AlertDialog.Builder(this)
-                .setTitle(pendingEvent.type+" !!!")
-                .setMessage(pendingEvent.toString())
+                .setTitle(openTransaction.reward.type+" !!!")
+                .setMessage(openTransaction.toString())
                 .setPositiveButton(android.R.string.ok,
                         (dialog, whichButton) -> {
-                            Kwizzad.completeEvent(pendingEvent);
+                            Kwizzad.completeTransaction(openTransaction);
                         }
                 )
                 .setNegativeButton(android.R.string.cancel,
                         (dialog, whichButton) -> {
                             dialog.dismiss();
-                            shownEvents.remove(pendingEvent);
+                            shownEvents.remove(openTransaction);
                         }
                 )
-                .setOnDismissListener(dialog -> shownEvents.remove(pendingEvent))
+                .setOnDismissListener(dialog -> shownEvents.remove(openTransaction))
                 .create()
                 .show();
 
