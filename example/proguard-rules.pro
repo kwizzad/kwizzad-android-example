@@ -15,8 +15,26 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-printmapping mapping.txt
+-verbose
+-dontoptimize
+-dontpreverify
+-dontobfuscate
+-dontshrink
+-dontusemixedcaseclassnames
+-renamesourcefileattribute SourceFile
+-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
 
 #kwizzad
--keep class com.google.android.gms.ads.identifier.* {*;}
--keep class com.kwizzad.* {*;}
+-keep class com.kwizzad.** {*;}
+-dontwarn com.kwizzad.*
+
+-keep class com.google.android.gms.** {*;}
+-dontwarn com.google.android.gms.*
+
+-keep class rx.** {*;}
+-dontwarn rx.internal.*
+-dontwarn sun.misc.Unsafe
+
 -dontwarn java.lang.invoke.*
+
