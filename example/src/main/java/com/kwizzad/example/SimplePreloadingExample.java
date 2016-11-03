@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.kwizzad.AdDialogFragment;
 import com.kwizzad.Kwizzad;
 
 import rx.Subscription;
@@ -39,8 +38,8 @@ public class SimplePreloadingExample extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        subscription = Kwizzad.placementState(placementId)
-                .observe()
+        subscription = Kwizzad.getPlacementModel(placementId)
+                .observeState()
                 .subscribe(placementState -> {
                     switch (placementState.adState) {
                         case NOFILL:

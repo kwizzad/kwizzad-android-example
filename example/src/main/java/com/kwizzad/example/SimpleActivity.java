@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import com.kwizzad.AdDialogFragment;
 import com.kwizzad.Kwizzad;
 import com.kwizzad.log.QLog;
 import com.kwizzad.model.AdState;
@@ -84,9 +83,9 @@ public class SimpleActivity extends AppCompatActivity {
         /**
          * listen to value, bound to the tag "this"
          */
-        RxSubscriber.subscribe(this, Kwizzad.placementState(placementId).observe(), placementState -> {
+        RxSubscriber.subscribe(this, Kwizzad.getPlacementModel(placementId).observeState(), placementState -> {
 
-            QLog.d("got state "+placementState.adState);
+            QLog.d("got state " + placementState.adState);
 
             switch (placementState.adState) {
                 case NOFILL:
@@ -122,7 +121,7 @@ public class SimpleActivity extends AppCompatActivity {
         /**
          * we can also just get the value
          */
-        AdState state = Kwizzad.placementState(placementId).get().adState;
+        AdState state = Kwizzad.getPlacementModel(placementId).getState().adState;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.kwizzad.example;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -15,16 +16,17 @@ import com.kwizzad.model.OpenTransaction;
 import com.kwizzad.model.events.Reward;
 import com.kwizzad.property.RxSubscriber;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity {
+import rx.Observable;
+import rx.Subscription;
+import rx.functions.Func1;
 
-    private Set<OpenTransaction> shownEvents = new HashSet<>();
+public class MainActivity extends AppCompatActivity {
     private TextInputLayout placementIdInput;
-    private View preloadButton;
-    private View simpleButton;
-    private View simplePreloadButton;
+    private Subscription pendingSubscription;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,10 +36,10 @@ public class MainActivity extends AppCompatActivity {
 
         placementIdInput = (TextInputLayout) findViewById(R.id.placementId);
 
-        simpleButton = findViewById(R.id.simple);
+        View simpleButton = findViewById(R.id.simple);
         if (simpleButton != null) {
             simpleButton.setOnClickListener(v -> {
-                if (Kwizzad.initialized().get()) {
+                if (Kwizzad.isInitialized()) {
                     startActivity(SimpleActivity.createIntent(MainActivity.this, placementIdInput.getEditText().getText().toString()));
                 } else {
                     Log.e("KWIZZAD", "not initialized");
@@ -46,10 +48,10 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        preloadButton = findViewById(R.id.preload);
+        View preloadButton = findViewById(R.id.preload);
         if (preloadButton != null) {
             preloadButton.setOnClickListener(v -> {
-                if (Kwizzad.initialized().get()) {
+                if (Kwizzad.isInitialized()) {
                     PreloadingDialogFragment.create(placementIdInput.getEditText().getText().toString())
                             .show(getFragmentManager(), "preload");
                 } else {
@@ -59,10 +61,10 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        simplePreloadButton = findViewById(R.id.simplePreload);
-        if(simplePreloadButton != null) {
+        View simplePreloadButton = findViewById(R.id.simplePreload);
+        if (simplePreloadButton != null) {
             simplePreloadButton.setOnClickListener(v -> {
-                if (Kwizzad.initialized().get()) {
+                if (Kwizzad.isInitialized()) {
                     startActivity(SimplePreloadingExample.createIntent(this, placementIdInput.getEditText().getText().toString()));
                 } else {
                     Log.e("KWIZZAD", "not initialized");
@@ -78,71 +80,63 @@ public class MainActivity extends AppCompatActivity {
 
         Kwizzad.resume(this);
 
-        RxSubscriber.subscribe(this, Kwizzad.pendingTransactions(), pendingEvents -> {
-            if (pendingEvents.size() > 0) {
-                QLog.d("should show event " + pendingEvents);
-                // there are multiple callbacks possibly coming. its up to you if you want to show them all now
-                // or you want to show them some very different way.
-                // maybe its something like a notification for you
-                // thats what i will do here
+        nextPendingTransaction();
+    }
 
-                // we dont wanna show this twice at least for the same session here
-                // you can handle that any way you want though
-                for (OpenTransaction openTransaction : pendingEvents) {
-                    if (shownEvents.contains(openTransaction) == false) {
-                        QLog.d("showing event " + openTransaction);
+    private void nextPendingTransaction() {
+        pendingSubscription = Kwizzad.pendingTransactions()
+                .filter(openTransactions -> openTransactions!=null && openTransactions.size()>0)
+                .flatMap(openTransactions -> {
+                    // only return sth if we find an active one
+                    for(OpenTransaction openTransaction : openTransactions)
+                        if(openTransaction.state == OpenTransaction.State.ACTIVE)
+                            return Observable.just(openTransaction);
 
-                        Reward reward = openTransaction.reward;
-                        if (reward != null)
-                        {
-                            // Here you get the reward amount for the user.
-                            int rewardAmount = reward.amount;
-                            String rewardCurrency = reward.currency; // e.g. chips, coins, loot, smiles as configued by KWIZZAD.
-
-                            /*
-
-                            The following part is optional: If you want to know which type of reward the notification was about
-                            How to distinguish between Call2Action (Instant-Reward) and Callback (full billing)
-
-                            Reward.Type rewardType = reward.type; // CALL2ACTIONSTARTED, CALLBACK, GOALREACHED
-
-                            if (openTransaction.reward.type.equals(Reward.Type.CALL2ACTIONSTARTED)) { ... }
-
-                            else if (openTransaction.reward.type.equals(Reward.Type.CALLBACK)) { ... }
-
-                          */
-
-                        }
-
-                        showEvent(openTransaction);
-                    }
-                    else {
-                        QLog.d("already shown event "+openTransaction);
-                    }
-                }
-            }
-        });
+                    //nothing
+                    return Observable.empty();
+                })
+                .first()
+                .subscribe(openTransaction -> {
+                    QLog.d("should show event " + openTransaction);
+                    showEvent(openTransaction);
+                });
     }
 
     private void showEvent(final OpenTransaction openTransaction) {
-        shownEvents.add(openTransaction);
 
+        Reward reward = openTransaction.reward;
+        if (reward != null) {
+            // Here you get the reward amount for the user.
+            int rewardAmount = reward.amount;
+            String rewardCurrency = reward.currency; // e.g. chips, coins, loot, smiles as configued by KWIZZAD.
+
+            /*
+
+            The following part is optional: If you want to know which type of reward the notification was about
+            How to distinguish between Call2Action (Instant-Reward) and Callback (full billing)
+
+            Reward.Type rewardType = reward.type; // CALL2ACTIONSTARTED, CALLBACK, GOALREACHED
+
+            if (openTransaction.reward.type.equals(Reward.Type.CALL2ACTIONSTARTED)) { ... }
+
+            else if (openTransaction.reward.type.equals(Reward.Type.CALLBACK)) { ... }
+
+          */
+        }
 
         new AlertDialog.Builder(this)
-                .setTitle(openTransaction.reward.type+" !!!")
+                .setTitle("Transaction!")
                 .setMessage(openTransaction.toString())
                 .setPositiveButton(android.R.string.ok,
-                        (dialog, whichButton) -> {
-                            Kwizzad.completeTransaction(openTransaction);
-                        }
+                        (dialog, whichButton) -> Kwizzad.completeTransaction(openTransaction)
                 )
                 .setNegativeButton(android.R.string.cancel,
                         (dialog, whichButton) -> {
                             dialog.dismiss();
-                            shownEvents.remove(openTransaction);
                         }
                 )
-                .setOnDismissListener(dialog -> shownEvents.remove(openTransaction))
+                // get the next one
+                .setOnDismissListener(dialog -> nextPendingTransaction())
                 .create()
                 .show();
 
@@ -152,5 +146,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         RxSubscriber.unsubscribe(this);
+        if(pendingSubscription!=null) {
+            pendingSubscription.unsubscribe();
+        }
     }
 }
