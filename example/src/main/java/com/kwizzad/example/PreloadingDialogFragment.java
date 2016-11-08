@@ -1,18 +1,18 @@
 package com.kwizzad.example;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kwizzad.AdDialogFragment;
 import com.kwizzad.Kwizzad;
 import com.kwizzad.log.QLog;
 import com.kwizzad.model.AdState;
+import com.kwizzad.model.events.Reward;
 import com.kwizzad.property.RxSubscriber;
 
 import java.util.HashMap;
@@ -100,12 +100,11 @@ public class PreloadingDialogFragment extends DialogFragment {
         /**
          * listen to value, bound to the tag "this"
          */
-        RxSubscriber.subscribe(this, Kwizzad.placementState(placementId).observe(), placementState -> {
+        RxSubscriber.subscribe(this, Kwizzad.getPlacementModel(placementId).observeState(), placementState -> {
 
             QLog.d("got state " + placementState.adState);
 
-            // OPTION A: Show button once ad becomes available.
-            //adButton.setVisibility(placementState.adState == AdState.AD_READY ? View.VISIBLE : View.GONE);
+            adButton.setVisibility(placementState.adState == AdState.AD_READY ? View.VISIBLE : View.GONE);
 
             switch (placementState.adState) {
                 case NOFILL:
@@ -125,15 +124,15 @@ public class PreloadingDialogFragment extends DialogFragment {
 
                     break;
                 case RECEIVED_AD:
+                    // Calculate the total reward amount. We can show this to the app user before starting the actual KWIZZAD.
+                    Iterable<Reward> rewards = Kwizzad.getPlacement(placementId).getRewards();
+                    int totalReward = 0;
+                    for (Reward reward: rewards)
+                    {
+                        totalReward += reward.amount;
+                    }
                     statusTextView.setText("ad ready to show for placement " + placementId);
                     Kwizzad.prepare(placementId, getActivity());
-                    break;
-                case AD_READY:
-                    // OPTION-B: Direct Alternative: use this to directly show ad once ready.
-                            Kwizzad.createAdViewBuilder()
-                            .setPlacementId(placementId)
-                            .dialogFragment()
-                            .show(getFragmentManager(), "ad");
                     break;
                 case DISMISSED:
                     statusTextView.setText("finished showing the ad for placement " + placementId);
