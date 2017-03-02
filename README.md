@@ -1,4 +1,4 @@
-# 1. Prerequisites
+# Prerequisites
 
 - You already have your own KWIZZAD API KEY and PLACEMENT ID. If not, please contact TVSMILES per [E-Mail](mailto:it@tvsmiles.de) and we will register your APP.
 - Apps integrating KWIZZAD SDK require Android 4.1 (API level 16 Jelly Bean) or higher to run. Advertising will only be played starting from Android 4.3 (API Level 18 Jelly Bean) or higher.
@@ -14,7 +14,7 @@ More information about using ProGuard can be found on [Android Tools Project Sit
 
 
 
-# 2. Add the KWIZZAD SDK to your Android project
+# Add the KWIZZAD SDK to your Android project
 
 Open the `build.gradle` file of your Android project. Add a new build rule under `repositories` and `dependencies.`
 
@@ -61,7 +61,7 @@ To uniquely identify devices our SDK requires the Android Advertising ID. For co
 
 
 
-## 2.1 Resolve dependency conflicts
+## Resolve dependency conflicts
 
 To avoid dependency conflicts you should always use the most recent version of any library and so does KWIZZAD.
 
@@ -82,7 +82,7 @@ dependencies {
 
 
 
-# 3. Initialize the SDK
+# Initialize the SDK
 
 The following should be done in your Application Class, as it should only be done once per start of the application. Please do not do this in every MainActivity. Application is really the right place here.
 
@@ -116,7 +116,7 @@ public class ExampleApplication extends Application {
 }
 ```
 
-# 4. Quick Integration: Request and show an ad
+# Quick Integration: Request and show an ad
 
 ## Step 1: Request an ad
 
