@@ -150,8 +150,8 @@ KWIZZAD uses [reactivex](http://reactivex.io/) to implement an Observer pattern 
 
 Kwizzad.createAdViewBuilder() supports both Fragment implementations depending on your needs:
 
-1. supportDialogFragment() creates a fragment based on android.app.DialogFragment
-2. dialogFragment() creates a fragment based on android.support.v4.app.DialogFragment
+1. supportDialogFragment() creates a fragment based on android.support.v4.app.DialogFragment
+2. dialogFragment() creates a fragment based on android.app.DialogFragment
 
 ```java
 @Override
