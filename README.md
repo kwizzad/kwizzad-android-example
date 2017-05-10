@@ -9,7 +9,13 @@
 - A fully working example can be found at: [https://github.com/kwizzad/kwizzad-android-example](https://github.com/kwizzad/kwizzad-android-example)
 
 **ProGuard configuration**
-You don't have to perform any additional configurations to use ProGuard for TV SMILES Android SDK.
+
+For release builds to work correctly, please ensure Kwizzad SDK's class names are kept intact using this configuration line:
+
+```
+-keep class com.kwizzad.** { *; }
+```
+
 More information about using ProGuard can be found on [Android Tools Project Site, Running ProGuard](http://tools.android.com/tech-docs/new-build-system/user-guide#TOC-Running-ProGuard).
 
 
