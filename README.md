@@ -189,13 +189,11 @@ public void onResume() {
                          */
                         .setPlacementId(placementId)
                         /*
-                         * set any custom parameters like userID, aff_sub, tracking token, ...
+                         * set any custom parameters like transactionId, aff_sub, tracking token, ...
                          * These will be available later on in callbacks to identify the originating ad session.
-                         *
-                         * For backwards compatibilitity you should still include the userId at this point even if you've already set it with the new Kwizzad.getUserData().setUserId() method.
                          */
                         .setCustomParameter("foo", "bar")
-                        .setCustomParameter("userId", "0815")
+                        .setCustomParameter("transactionId", "0815")
                         /*
                          * build it
                          */
